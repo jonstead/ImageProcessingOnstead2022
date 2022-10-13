@@ -1090,8 +1090,9 @@ public class IP {
                 Color original = new Color(bufferedImage.getRGB(x, y));
 
                 float[] hsv = Main.rgbTohsv(original.getRed(), original.getGreen(), original.getBlue());
-
-                histogram[(int) hsv[0]]++;
+                if(original.getRed() != original.getGreen() && original.getRed() != original.getBlue() && original.getGreen() != original.getBlue()){
+                    histogram[(int) hsv[0]]++;
+                }
 
             }
         }
@@ -1129,7 +1130,7 @@ public class IP {
                 g.setColor(color2);
             }
             else{
-                g.setColor(Color.BLUE);
+                g.setColor(Color.WHITE);
             }
             g.fillRect(i, 0, 1, (int) ((1 - histogram[i]) * height));
         }
@@ -1142,6 +1143,113 @@ public class IP {
 
         return this;
     }
+
+    public IP toHistogramHueNullZero(boolean alter) {
+        var bw = bufferedImage.getWidth();
+        var bh = bufferedImage.getHeight();
+
+        int height = 200;
+        var intermediate = new BufferedImage(360, height, BufferedImage.TYPE_INT_ARGB);
+
+        float[] histogram = new float[361];
+        for (var i = 0; i < 361; i++) {
+            histogram[0] = 0;
+        }
+
+        for (var y = 0; y < bh; y++) {
+            for (var x = 0; x < bw; x++) {
+
+                Color original = new Color(bufferedImage.getRGB(x, y));
+
+                float[] hsv = Main.rgbTohsv(original.getRed(), original.getGreen(), original.getBlue());
+
+                histogram[(int) hsv[0]]++;
+
+            }
+        }
+
+        // Normalize
+        float max = 0;
+        for (int i = 0; i < 361; i++) {
+            if (histogram[i] > max && i != 0) {
+                max = histogram[i];
+            }
+            if(histogram[i] >= 20000){
+                // System.out.println(i + ": " + histogram[i]);
+            }
+        }
+
+        for (int i = 0; i < 361; i++) {
+            histogram[i] /= max;
+            if (i == 0 && histogram[0] >= max){
+                histogram[i] = max;
+                histogram[i] /= max;
+            }
+            else if(i == 0){
+                histogram[i] /= max;
+            }
+
+        }
+
+        Graphics g = intermediate.getGraphics();
+
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, 360, height);
+        float[] hsv = new float[3];
+        for (int i = 0; i < 361; i++) {
+            if(alter == true){
+                hsv[0] = i%360;
+                hsv[1] = 200;
+                hsv[2] = 200;
+                float[] rgb = Main.hsvToRgb(hsv[0], hsv[1], hsv[2]);
+                Color color2 = new Color(((int)rgb[0]), ((int)rgb[1]), ((int)rgb[2]));
+                g.setColor(color2);
+            }
+            else{
+                g.setColor(Color.WHITE);
+            }
+            g.fillRect(i, 0, 1, (int) ((1 - histogram[i]) * height));
+        }
+
+        g.dispose();
+
+        // intermediate.setRGB(x, y, new Color((int) rgb[0], (int) rgb[1], (int)
+        // rgb[2]).getRGB());
+        bufferedImage = intermediate;
+
+        return this;
+    }
+
+    public IP bitSlice(int i){
+        updatePixels(c ->{
+            int r = c.getRed();
+            int r2 = r & i;
+            r2 *= 255/(float)i;
+
+            int g = c.getGreen();
+            int g2 = g & i;
+            g2 *= 255/(float)i;
+
+            int b = c.getBlue();
+            int b2 = b & i;
+            b2 *= 255/(float)i;
+            return new Color(r2, g2, b2);            
+        });
+        return this;
+    }
+
+    public IP updatePixels(IColorToColor lambda) {
+        for (int y = 0; y < bufferedImage.getHeight(); y++) {
+          for (int x = 0; x < bufferedImage.getWidth(); x++) {
+    
+            Color color = new Color(bufferedImage.getRGB(x, y));
+            Color newColor = lambda.toColor(color);
+    
+            bufferedImage.setRGB(x, y, newColor.getRGB());
+          }
+        }
+        return new IP(this);
+      }
 
     public boolean isValidCoordinate(int x, int y){
         return x >= 0 && y >= 0 && x < bufferedImage.getWidth() && y < bufferedImage.getHeight();

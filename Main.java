@@ -9,42 +9,50 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Main {
     public static void main(String[] args) {
         // new IP("download.jpg").onlyHighHue().save("downloadHighHue.png");
-        AtomicInteger width = new AtomicInteger(-1);
-        AtomicInteger height = new AtomicInteger(-1);
+        // AtomicInteger width = new AtomicInteger(-1);
+        // AtomicInteger height = new AtomicInteger(-1);
 
         new ICon("sheep.jpg")
-        .setAsWidth(width)
-        .setAsHeight(height)
-        .addLayer("./Images/gradient.jpg")
-        .setLayerAlpha(1f)
-        .exec(l -> l.removeBlue())
-        .setLayerBlendmode(BlendMode.Darken)
-        .exec(ip -> ip.scaleLinear(width.get() / 255.0f, height.get() / 255.0f / 1.175f))
-        // .setBackgroundColor(Color.MAGENTA)
-        .save("sheepBlueDarken.png"); 
-        
-        new IP("sheepBlueDarken.png").toHistogramHue(false).save("sheepBlueDarkenHistogramHue.png");
-        new IP("sheepBlueDarken.png").toHistogramValue(true).save("sheepBlueDarkenHistogramValue.png");
-        
-        new ICon("sheepBlueDarkenHistogramHue.png")
-        .setAsWidth(width)
-        .setAsHeight(height)
-        .addToCanvasSize(0, 200)
-        .addLayer("sheepBlueDarkenHistogramValue.png")
-        .moveLayer(0, height.get())
-        .exec(ip -> ip.scaleLinear(width.get() / 255.0f, 1))
-        .setBackgroundColor(Color.WHITE)
-        .save("sheepBlueDarkenHistogram.png"); 
+        .exec(i->i.bitSlice(0b11000000))
+        .save("sheepBitSlicing.png");
 
-        new ICon("sheepBlueDarken.png")
-        .setAsWidth(width)
-        .setAsHeight(height)
-        .addToCanvasSize(0, 400)
-        .addLayer("sheepBlueDarkenHistogram.png")
-        .selectLayer(1)
-        .moveLayer(0, height.get())
-        .exec(ip -> ip.scaleLinear(width.get() / 360.0f, 1))
-        .save("sheepBlueDarkenHistogram2.png"); 
+        // new ICon("sheep.jpg")
+        // .setAsWidth(width)
+        // .setAsHeight(height)
+        // .addLayer("./Images/gradient.jpg")
+        // .setLayerAlpha(1f)
+        // .exec(l -> l.removeBlue())
+        // .setLayerBlendmode(BlendMode.Darken)
+        // .exec(ip -> ip.scaleLinear(width.get() / 255.0f, height.get() / 255.0f / 1.175f))
+        // .save("sheepBlueDarken.png"); 
+        
+        // new IP("sheep.jpg").toHistogramHue(true).save("sheepHistogramHue.png");
+        // new IP("sheep.jpg").toHistogramHueNullZero(true).save("sheepHistogramHueNullZero.png");
+        // new IP("download.jpg").toHistogramHue(true).save("downloadHistogramHue.png");
+        // new IP("download.jpg").toHistogramHueNullZero(true).save("downloadHistogramHue.png");
+        // new IP("sheepBlueDarken.png").toHistogramHue(true).save("sheepBlueDarkenHistogramHue.png");
+        // new IP("sheepBlueDarken.png").toHistogramHue(true).save("sheepBlueDarkenHistogramHueNullZero.png");
+        // new IP("sheepBlueDarken.png").toHistogramValue(true).save("sheepBlueDarkenHistogramValue.png");
+        
+        // new ICon("sheepBlueDarkenHistogramHue.png")
+        // .setAsWidth(width)
+        // .setAsHeight(height)
+        // .addToCanvasSize(0, 200)
+        // .addLayer("sheepBlueDarkenHistogramValue.png")
+        // .moveLayer(0, height.get())
+        // .exec(ip -> ip.scaleLinear(width.get() / 255.0f, 1))
+        // .setBackgroundColor(Color.WHITE)
+        // .save("sheepBlueDarkenHistogram.png"); 
+
+        // new ICon("sheepBlueDarken.png")
+        // .setAsWidth(width)
+        // .setAsHeight(height)
+        // .addToCanvasSize(0, 400)
+        // .addLayer("sheepBlueDarkenHistogram.png")
+        // .selectLayer(1)
+        // .moveLayer(0, height.get())
+        // .exec(ip -> ip.scaleLinear(width.get() / 360.0f, 1))
+        // .save("sheepBlueDarkenHistogram2.png"); 
 }
 
     public static float interpolate(float one, float two, float percent){
