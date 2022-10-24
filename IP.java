@@ -999,7 +999,7 @@ public class IP {
 
         float[] histogram = new float[256];
         for (var i = 0; i < 256; i++) {
-            histogram[0] = 0;
+            histogram[i] = 0;
         }
 
         for (var y = 0; y < bh; y++) {
@@ -1018,14 +1018,21 @@ public class IP {
         // Normalize
         float max = 0;
         for (int i = 0; i < 256; i++) {
-            if (histogram[i] > max) {
+            if(histogram[i] > max && i == 255){
+                System.out.println("Nulling 255, for testing purpose, was clearly wrong, attempting to fix, 255: " + histogram[i]);
+                // histogram[i] = max;
                 max = histogram[i];
+                System.out.println("i: " + i + ", Max: " + max);
+            }
+            else if (histogram[i] > max) {
+                max = histogram[i];
+                System.out.println("i: " + i + ", Max: " + max);
             }
         }
 
-        for (int i = 0; i < 256; i++) {
-            histogram[i] /= max;
-        }
+        // for (int i = 0; i < 256; i++) {
+        //     histogram[i] /= max;
+        // }
 
         Graphics g = intermediate.getGraphics();
 
@@ -1036,37 +1043,20 @@ public class IP {
             g.setColor(Color.WHITE);
         }
         g.fillRect(0, 0, 255, height);
-        // Random obj = new Random();
         for (int i = 0; i < 256; i++) {
             if(alter == true){
-                // int rand_num = obj.nextInt(0xffffff + 1);
-                // String colorCode = String.format("#%06x", rand_num);
-                // Color color2 = Color.decode(colorCode);
-                // float[] hsv = Main.rgbTohsv(color2.getRed(), color2.getGreen(), color2.getBlue());
-                // hsv[2] = i;
-                // float[] rgb = Main.hsvToRgb(hsv[0], hsv[1], hsv[2]);
                 Color color2;
-                // if(i <= 10){
-                //     color2 = new Color(10, 10, 10);
-                // }
-                // else if(i >= 200){
-                //     color2 = new Color(200, 200, 200);
-                // }
-                // else{
-                    color2 = new Color(i, i, i);
-                // }
+                color2 = new Color(i, i, i);
                 g.setColor(color2);
             }
             else{
                 g.setColor(Color.BLACK);
             }
-            g.fillRect(i, 0, 1, (int) ((1 - histogram[i]) * height));
+            g.fillRect(i, 0, 1, (int) ((1 - histogram[i]/max) * height));
         }
 
         g.dispose();
 
-        // intermediate.setRGB(x, y, new Color((int) rgb[0], (int) rgb[1], (int)
-        // rgb[2]).getRGB());
         bufferedImage = intermediate;
 
         return this;
@@ -1081,22 +1071,29 @@ public class IP {
 
         float[] histogram = new float[361];
         for (var i = 0; i < 361; i++) {
-            histogram[0] = 0;
+            histogram[i] = 0;
         }
 
+        double total = 0;
+        double kept = 0;
         for (var y = 0; y < bh; y++) {
             for (var x = 0; x < bw; x++) {
 
                 Color original = new Color(bufferedImage.getRGB(x, y));
 
                 float[] hsv = Main.rgbTohsv(original.getRed(), original.getGreen(), original.getBlue());
-                if(original.getRed() != original.getGreen() && original.getRed() != original.getBlue() && original.getGreen() != original.getBlue()){
+                if((original.getRed() != original.getGreen() && original.getRed() != original.getBlue())
+                || (original.getRed() != original.getGreen() && original.getGreen() != original.getBlue())
+                || (original.getRed() != original.getBlue() && original.getGreen() != original.getBlue())){
                     histogram[(int) hsv[0]]++;
+                    kept++;
                 }
-
+                total++;
             }
         }
-
+        double percent = kept / total * 100;
+        System.out.println("Total: " + total + ", Kept: " + kept + ", Percentage remaining: " + percent + "%");
+        
         // Normalize
         float max = 0;
         for (int i = 0; i < 361; i++) {
@@ -1125,6 +1122,8 @@ public class IP {
                 Color color2 = Color.decode(colorCode);
                 float[] hsv = Main.rgbTohsv(color2.getRed(), color2.getGreen(), color2.getBlue());
                 hsv[0] = i%360;
+                hsv[1] = 255;
+                hsv[2] = 255;
                 float[] rgb = Main.hsvToRgb(hsv[0], hsv[1], hsv[2]);
                 color2 = new Color(((int)rgb[0]), ((int)rgb[1]), ((int)rgb[2]));
                 g.setColor(color2);
@@ -1137,8 +1136,6 @@ public class IP {
 
         g.dispose();
 
-        // intermediate.setRGB(x, y, new Color((int) rgb[0], (int) rgb[1], (int)
-        // rgb[2]).getRGB());
         bufferedImage = intermediate;
 
         return this;
@@ -1153,9 +1150,10 @@ public class IP {
 
         float[] histogram = new float[361];
         for (var i = 0; i < 361; i++) {
-            histogram[0] = 0;
+            histogram[i] = 0;
         }
-
+        
+        double total = 0;
         for (var y = 0; y < bh; y++) {
             for (var x = 0; x < bw; x++) {
 
@@ -1164,7 +1162,7 @@ public class IP {
                 float[] hsv = Main.rgbTohsv(original.getRed(), original.getGreen(), original.getBlue());
 
                 histogram[(int) hsv[0]]++;
-
+                total++;
             }
         }
 
@@ -1179,6 +1177,14 @@ public class IP {
             }
         }
 
+        double removed = (double)(histogram[0] - max);
+        if(removed <= 0){
+            removed = 0;
+        }
+        else{
+            removed = removed / total * 100;
+        }
+        System.out.println("Total: " + total + ", Max: " + max + ", Zero: " + histogram[0] + ", Removing: " + removed + "%");
         for (int i = 0; i < 361; i++) {
             histogram[i] /= max;
             if (i == 0 && histogram[0] >= max){
@@ -1199,8 +1205,8 @@ public class IP {
         for (int i = 0; i < 361; i++) {
             if(alter == true){
                 hsv[0] = i%360;
-                hsv[1] = 200;
-                hsv[2] = 200;
+                hsv[1] = 255;
+                hsv[2] = 255;
                 float[] rgb = Main.hsvToRgb(hsv[0], hsv[1], hsv[2]);
                 Color color2 = new Color(((int)rgb[0]), ((int)rgb[1]), ((int)rgb[2]));
                 g.setColor(color2);
@@ -1212,9 +1218,7 @@ public class IP {
         }
 
         g.dispose();
-
-        // intermediate.setRGB(x, y, new Color((int) rgb[0], (int) rgb[1], (int)
-        // rgb[2]).getRGB());
+        
         bufferedImage = intermediate;
 
         return this;

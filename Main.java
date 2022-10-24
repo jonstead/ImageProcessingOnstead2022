@@ -9,50 +9,65 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Main {
     public static void main(String[] args) {
         // new IP("download.jpg").onlyHighHue().save("downloadHighHue.png");
-        // AtomicInteger width = new AtomicInteger(-1);
-        // AtomicInteger height = new AtomicInteger(-1);
+        AtomicInteger width = new AtomicInteger(-1);
+        AtomicInteger height = new AtomicInteger(-1);
 
         new ICon("sheep.jpg")
-        .exec(i->i.bitSlice(0b11000000))
+        .exec(i->i.bitSlice(0b11011011))
         .save("sheepBitSlicing.png");
 
-        // new ICon("sheep.jpg")
-        // .setAsWidth(width)
-        // .setAsHeight(height)
-        // .addLayer("./Images/gradient.jpg")
-        // .setLayerAlpha(1f)
-        // .exec(l -> l.removeBlue())
-        // .setLayerBlendmode(BlendMode.Darken)
-        // .exec(ip -> ip.scaleLinear(width.get() / 255.0f, height.get() / 255.0f / 1.175f))
-        // .save("sheepBlueDarken.png"); 
+        new ICon("sheepBitSlicing.png")
+        .setAsWidth(width)
+        .setAsHeight(height)
+        .addLayer("./Images/gradient.jpg")
+        .setLayerAlpha(1f)
+        .exec(l -> l.removeBlue())
+        .setLayerBlendmode(BlendMode.Divide)
+        .exec(ip -> ip.scaleLinear(width.get() / 255.0f, height.get() / 255.0f / 1.175f))
+        .save("sheepBitSlicingBlueDarken.png");
         
-        // new IP("sheep.jpg").toHistogramHue(true).save("sheepHistogramHue.png");
-        // new IP("sheep.jpg").toHistogramHueNullZero(true).save("sheepHistogramHueNullZero.png");
-        // new IP("download.jpg").toHistogramHue(true).save("downloadHistogramHue.png");
-        // new IP("download.jpg").toHistogramHueNullZero(true).save("downloadHistogramHue.png");
-        // new IP("sheepBlueDarken.png").toHistogramHue(true).save("sheepBlueDarkenHistogramHue.png");
-        // new IP("sheepBlueDarken.png").toHistogramHue(true).save("sheepBlueDarkenHistogramHueNullZero.png");
-        // new IP("sheepBlueDarken.png").toHistogramValue(true).save("sheepBlueDarkenHistogramValue.png");
-        
-        // new ICon("sheepBlueDarkenHistogramHue.png")
-        // .setAsWidth(width)
-        // .setAsHeight(height)
-        // .addToCanvasSize(0, 200)
-        // .addLayer("sheepBlueDarkenHistogramValue.png")
-        // .moveLayer(0, height.get())
-        // .exec(ip -> ip.scaleLinear(width.get() / 255.0f, 1))
-        // .setBackgroundColor(Color.WHITE)
-        // .save("sheepBlueDarkenHistogram.png"); 
 
-        // new ICon("sheepBlueDarken.png")
-        // .setAsWidth(width)
-        // .setAsHeight(height)
-        // .addToCanvasSize(0, 400)
-        // .addLayer("sheepBlueDarkenHistogram.png")
-        // .selectLayer(1)
-        // .moveLayer(0, height.get())
-        // .exec(ip -> ip.scaleLinear(width.get() / 360.0f, 1))
-        // .save("sheepBlueDarkenHistogram2.png"); 
+        new IP("sheepBitSlicingBlueDarken.png").toHistogramHue(true).save("sheepBitSlicingBlueDarkenHistogramHue.png");
+        new IP("sheepBitSlicingBlueDarken.png").toHistogramHueNullZero(true).save("sheepBitSlicingBlueDarkenHistogramHueNullZero.png");
+        new IP("sheepBitSlicingBlueDarken.png").toHistogramValue(true).save("sheepBitSlicingBlueDarkenHistogramValue.png");
+        
+        new ICon("download.jpg")
+        .exec(i->i.bitSlice(0b11011011))
+        .save("downloadBitSlicing.png");
+
+        new ICon("downloadBitSlicing.png")
+        .setAsWidth(width)
+        .setAsHeight(height)
+        .addLayer("./Images/gradient.jpg")
+        .setLayerAlpha(1f)
+        .exec(l -> l.removeBlue())
+        .setLayerBlendmode(BlendMode.Lighten)
+        .exec(ip -> ip.scaleLinear(width.get() / 255.0f, height.get() / 255.0f / 1.175f))
+        .save("downloadBitSlicingBlueDarken.png");
+        
+        new IP("downloadBitSlicingBlueDarken.png").toHistogramHue(true).save("sheepBitSlicingBlueDarkenHistogramHue.png");
+        new IP("downloadBitSlicingBlueDarken.png").toHistogramHueNullZero(true).save("sheepBitSlicingBlueDarkenHistogramHueNullZero.png");
+        new IP("downloadBitSlicingBlueDarken.png").toHistogramValue(true).save("downloadHistogramValue.png");
+        
+        new ICon("sheepBitSlicingBlueDarkenHistogramHueNullZero.png")
+        .setAsWidth(width)
+        .setAsHeight(height)
+        .addToCanvasSize(0, 200)
+        .addLayer("sheepBitSlicingBlueDarkenHistogramValue.png")
+        .moveLayer(0, height.get())
+        .exec(ip -> ip.scaleLinear(width.get() / 255.0f, 1))
+        .setBackgroundColor(Color.WHITE)
+        .save("sheepBitSlicingBlueDarkenHistogram.png"); 
+
+        new ICon("sheepBitSlicingBlueDarken.png")
+        .setAsWidth(width)
+        .setAsHeight(height)
+        .addToCanvasSize(0, 400)
+        .addLayer("sheepBitSlicingBlueDarkenHistogram.png")
+        .selectLayer(1)
+        .moveLayer(0, height.get())
+        .exec(ip -> ip.scaleLinear(width.get() / 360.0f, 1))
+        .save("sheepBitSlicingBlueDarkenHistogram2.png"); 
 }
 
     public static float interpolate(float one, float two, float percent){
